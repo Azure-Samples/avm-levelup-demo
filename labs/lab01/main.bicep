@@ -29,38 +29,14 @@ module core 'core.bicep' = {
   }
 }
 
-module testDeployment 'br/public:avm/res/storage/storage-account:0.5.0' = {
+module workload 'workload.bicep' = {
   scope: workloadResourceGroup
-  name: '${uniqueString(deployment().name, location)}-${identifier}'
+  name: '${uniqueString(deployment().name, location)}-workload'
   params: {
     location: location
-    name: '${identifier}saasdsg'
-    privateEndpoints: [
-      {
-        service: 'blob'
-        subnetResourceId: core.outputs.subnetResourceId
-        privateDnsZoneResourceIds: [
-          core.outputs.privateDNSZoneResourceId
-        ]
-      }
-    ]
-    blobServices: {
-      containers: [
-        {
-          name: '${identifier}container'
-          publicAccess: 'None'
-        }
-      ]
-    }
-    managedIdentities: {
-      userAssignedResourceIds: [
-        core.outputs.managedIdentityResourceId
-      ]
-    }
-    customerManagedKey: {
-      keyName: 'keyEncryptionKey'
-      keyVaultResourceId: core.outputs.keyVaultResourceId
-      userAssignedIdentityResourceId: core.outputs.managedIdentityResourceId
-    }
+    identifier: identifier
+    subnetResourceId: core.outputs.subnetResourceId
+    privateDNSZoneResourceId: core.outputs.privateDNSZoneResourceId
   }
+  dependsOn: [core] 
 }
